@@ -34,7 +34,6 @@ def fasta_reader(file, max_scan):
         fasta_df[['Accession', 'Sequence']] = fasta_df[0].str.split('\n', 1, \
                                             expand=True)
         fasta_df['Accession'] = fasta_df['Accession']
-#        fasta_df['Sequence'] = fasta_df['Sequence'].str[:]
         fasta_df['Sequence'] = fasta_df['Sequence'].replace('\n', '', regex=True).\
                                 astype(str).str.upper().replace('U', 'C').str[:max_scan+15]
         total_seq = fasta_df.shape[0]
@@ -47,7 +46,6 @@ def fasta_reader(file, max_scan):
         if total_seq != remained_seq:
             print("{} sequences were removed due to inconsistencies in"
                           " the provided file.".format(total_seq-remained_seq))
-        final_df.to_csv('final_df.csv', index=None)
         return final_df
     except Exception as exp:
         print(str(exp))
