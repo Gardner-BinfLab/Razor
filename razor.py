@@ -48,7 +48,6 @@ def fasta_reader(file, max_scan):
                           " the provided file.".format(total_seq-remained_seq))
         return final_df
     except Exception as exp:
-        print(str(exp))
         raise argparse.ArgumentTypeError('Something is wrong with the fasta file.')
 
 
