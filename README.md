@@ -8,7 +8,7 @@ Razor is a tool to detect signal peptides for *eukaryotic* protein sequences. In
 #### Prerequisite
  - Python 3.6+
 
-Download the source code to your device. In the source code directory, execute these commands:
+Download/Clone the source code to your device. In the source code directory, execute these commands:
 
 ```
 pip3 install -r requirements.txt
