@@ -1,0 +1,16 @@
+# Env
+env/
+
+# Pycache
+__pycache__/
+
+# Test files
+tests/
+benchmark_set.fasta
+final_df.csv
+result.csv
+test.fasta
+
+# 
+razor.7z
+
