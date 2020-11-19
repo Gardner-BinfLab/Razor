@@ -89,18 +89,17 @@ def features(seq):
     if len(seq) != 30:
         raise ValueError(
             "Input sequence must be 30 residues long!"
-            "\nExpected length 30: Got {}".format(len(seq))
+            "\nExpected length 30: Got {}\r".format(len(seq))
         )
-
+    aa_list = 'RKNDCEVIYFWL' + 'STG'
     converted = np.array([hydrop_flex_swi[i] for i in seq])
     hydro = converted[:, 0]
     flex = converted[:, 1]
     swi = converted[:, 2]
-    helix = np.array([seq.count(i) for i in "VIYFWL"])
-    other_aa = np.array([seq.count(i) for i in "RKNDCE"])
+    aa_counts = [seq.count(i) for i in aa_list]
 
     return np.concatenate(
-        [savgol_filter(hydro, 15, 2), savgol_filter(swi, 15, 2), helix, flex, other_aa]
+        [savgol_filter(hydro, 15, 2), savgol_filter(swi, 15, 2), flex, aa_counts]
     )
 
 def s_score(feat):
@@ -108,10 +107,10 @@ def s_score(feat):
     S score of sequence.
     Input is an array of features (102)
     """
-    if len(feat) != 102:
+    if len(feat) != 105:
         raise ValueError(
             "Input features length is incorrect!"
-            "Expected length 102: Got {}".format(len(feat))
+            "Expected length 105: Got {}".format(len(feat))
         )
 
     if feat.dtype != np.float64:
@@ -129,14 +128,14 @@ def validate_scan(seq, max_scan):
         warnings.warn(
             "The minimum length to take for evaluating C score "
             "must be greater than 16 but received {max_scan}."
-            " Correcting it to 45.".format(max_scan=max_scan)
+            " Correcting it to 45.\r".format(max_scan=max_scan)
         )
         max_scan = 45
     if max_scan > len(seq):
         warnings.warn(
             "The given maximum length to take for evaluating C score {max_scan} "
             "is greater than the input sequence length {len_seq}."
-            " Correcting it to sequence length {len_seq}.".format(
+            " Correcting it to sequence length {len_seq}.\r".format(
                 max_scan=max_scan, len_seq=len(seq)
             )
         )
@@ -198,12 +197,14 @@ def check_fungi(seq):
 def check_toxin(seq):
     '''
     Check if a sequence has toxic peptide.
-    Features is hydrophobicity and SWI upto position 19
+    Features is hydrophobicity and SWI upto position 23
     '''
-    seq = validate(seq)[:19]
-    hydrop = np.array([hydrop_flex_swi[i] for i in seq])[:, 0]
-    swi = np.array([hydrop_flex_swi[i] for i in seq])[:, 2]
-    feat = np.concatenate([hydrop, swi])
+    seq = validate(seq)[:23]
+    hydrop = np.array([hydrop_flex_swi[i] for i in seq])[:,0]
+    swi = np.array([hydrop_flex_swi[i] for i in seq])[:,2]
+    flex = np.array([hydrop_flex_swi[i] for i in seq])[:,1]
+    turn = np.array([seq.count(i) for i in 'NPGS'])
+    feat = np.concatenate([hydrop, swi, flex, turn])
 
     classifiers = TOXIN.Classifier
     scores = np.array([clf.predict_proba([feat]) for clf in classifiers])[:, :, 1].flatten()
