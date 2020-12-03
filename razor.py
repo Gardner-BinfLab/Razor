@@ -3,13 +3,14 @@
 """
 Created on Tue Sep 15 12:51:51 2020
 
-@author: bikash
+@author: bikash, CS Lim
 """
 
 import os
 import sys
 import argparse
 from pathlib import Path
+import re
 from multiprocessing import cpu_count
 from libs import detector
 import numpy as np
@@ -24,6 +25,22 @@ def check_file(file):
     else:
         raise argparse.ArgumentTypeError('Fasta file not found.')
 
+
+
+def check_seq(seq, max_scan=80):
+    '''Check for standard amino acid code up to max_scan + 15
+    '''
+    seq = seq.upper()[: max_scan + 15].replace("U", "C")
+    valid_aa = re.compile("^[RKNDQEHPYWSTGAMCFLVI]*$")
+    match = re.match(valid_aa, seq)
+
+    if match:
+        return True
+    else:
+        return False
+    
+
+    
 def fasta_reader(file, max_scan):
     '''Converts .fasta to a pandas dataframe with accession as index
     and sequence in a column 'sequence'
@@ -38,9 +55,10 @@ def fasta_reader(file, max_scan):
                                 astype(str).str.upper().replace('U', 'C').str[:max_scan+15]
         total_seq = fasta_df.shape[0]
         fasta_df.drop(0, axis=1, inplace=True)
-        fasta_df = fasta_df[~fasta_df['Sequence'].str.contains('B|J|O|U|X|Z')].copy()
-        fasta_df = fasta_df[fasta_df.Sequence != '']
-        fasta_df = fasta_df[fasta_df.Sequence != 'NONE']
+        # fasta_df = fasta_df[~fasta_df['Sequence'].str.contains('B|J|O|U|X|Z')].copy()
+        fasta_df['check'] = fasta_df.Sequence.apply(lambda x: check_seq(x))
+        fasta_df = fasta_df[fasta_df.check==True].drop('check', axis=1)
+        fasta_df = fasta_df[(fasta_df.Sequence != '') & (fasta_df.Sequence != 'NONE')]
         final_df = fasta_df.dropna()
         remained_seq = final_df.shape[0]
         if total_seq != remained_seq:
