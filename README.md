@@ -34,6 +34,8 @@ optional arguments:
                         Check for cleavage site upto this residue. Default: 80
   -n NCORES, --ncores NCORES
                         Number of cores to use. Default: 1/4 of total cores.
+  -q QUIET, --quiet QUIET
+                        Do not show warnings. (yes/no). Default: yes
 
 (c) Authors
 ```
@@ -72,4 +74,4 @@ For an example signal peptide: [Q07310](https://www.uniprot.org/uniprot/Q07310) 
 
 ## Cite
 If you find Razor useful, please cite the following paper:
- - ......
+ - Bikash K Bhandari, Paul P Gardner, Chun Shen Lim. (2020). Annotating eukaryotic and toxin-specific signal peptides using Razor. bioRxiv. DOI:[10.1101/2020.11.30.405613](https://doi.org/10.1101/2020.11.30.405613)

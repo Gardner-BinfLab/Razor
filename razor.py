@@ -38,7 +38,7 @@ def fasta_reader(file, max_scan):
                                 astype(str).str.upper().replace('U', 'C').str[:max_scan+15]
         total_seq = fasta_df.shape[0]
         fasta_df.drop(0, axis=1, inplace=True)
-        fasta_df = fasta_df[~fasta_df['Sequence'].str.contains('B|J|O|U|X|Z')].copy()
+        fasta_df = fasta_df[~fasta_df['Sequence'].str[:max_scan+15].str.contains('B|J|O|U|X|Z')].copy()
         fasta_df = fasta_df[fasta_df.Sequence != '']
         fasta_df = fasta_df[fasta_df.Sequence != 'NONE']
         final_df = fasta_df.dropna()
@@ -122,13 +122,19 @@ def check_arg(args=None):
                         '1/4 of total cores.',
                         type=int,
                         default=cpu_count()//2)
+    parser.add_argument('-q', '--quiet',
+                        help='Do not show warnings. (yes/no). '
+                        'Default: yes',
+                        type=str,
+                        default='yes')
 
 
     results = parser.parse_args(args)
     return (results.fastafile,
             results.output,
             results.maxscan,
-            results.ncores,)
+            results.ncores,
+            results.quiet)
 
 
 
@@ -145,7 +151,11 @@ def main():
     print('\nOK')
 
 if __name__ == '__main__':
-    f, o, m, n = check_arg(sys.argv[1:])
+    f, o, m, n, q = check_arg(sys.argv[1:])
+    if q == 'yes':
+        import warnings
+        warnings.filterwarnings("ignore")
+    
     df = fasta_reader(f, m)
     if df.shape[0] < 100:
         n = 1
