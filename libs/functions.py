@@ -72,7 +72,6 @@ def validate(seq, max_scan=45):
             seq = seq + "S" * (30 - length)
         return seq
     else:
-        print(seq+ 'Error')
         raise ValueError(
             "Unknown residues in the input "
             "sequence.\n Only standard amino acid codes "
