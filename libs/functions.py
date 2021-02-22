@@ -59,7 +59,7 @@ def validate(seq, max_scan=45):
     - Replaces 'U' with 'C'
     - Pads shorter sequence with 'S' so that the length
     is 30 residues.
-    - Raises ValueError if 'X' is within the residues
+    - Raises ValueError if 'X' is within the residues 
     defined by max_scan + 15.
     """
     seq = seq.upper()[: max_scan + 15].replace("U", "C")
@@ -88,9 +88,9 @@ def features(seq):
     if len(seq) != 30:
         raise ValueError(
             "Input sequence must be 30 residues long!"
-            "\nExpected length 30: Got {}\r".format(len(seq))
+            "\nExpected length 30: Got {}".format(len(seq))
         )
-    aa_list = 'RKNDCEVIYFWL' + 'STG'
+    aa_list = 'RKNDCEVIYFWL' + 'QP'
     converted = np.array([hydrop_flex_swi[i] for i in seq])
     hydro = converted[:, 0]
     flex = converted[:, 1]
@@ -104,12 +104,12 @@ def features(seq):
 def s_score(feat):
     """
     S score of sequence.
-    Input is an array of features (102)
+    Input is an array of features (104)
     """
-    if len(feat) != 105:
+    if len(feat) != 104:
         raise ValueError(
             "Input features length is incorrect!"
-            "Expected length 105: Got {}".format(len(feat))
+            "Expected length 104: Got {}".format(len(feat))
         )
 
     if feat.dtype != np.float64:
@@ -121,20 +121,20 @@ def s_score(feat):
 
 def validate_scan(seq, max_scan):
 
-    if not isinstance(max_scan, int):
+    if not type(max_scan) is int:
         raise TypeError("Only integers allowed for scan length.")
     if max_scan < 16:
         warnings.warn(
             "The minimum length to take for evaluating C score "
             "must be greater than 16 but received {max_scan}."
-            " Correcting it to 45.\r".format(max_scan=max_scan)
+            " Correcting it to 45.".format(max_scan=max_scan)
         )
         max_scan = 45
     if max_scan > len(seq):
         warnings.warn(
             "The given maximum length to take for evaluating C score {max_scan} "
             "is greater than the input sequence length {len_seq}."
-            " Correcting it to sequence length {len_seq}.\r".format(
+            " Correcting it to sequence length {len_seq}.".format(
                 max_scan=max_scan, len_seq=len(seq)
             )
         )
@@ -144,8 +144,8 @@ def validate_scan(seq, max_scan):
 def c_score(seq, max_scan=45):
     """
     C score of sequence (Max probs in cleavage sites)
-    Also returns the possible cleavage site and a probability of
-    cleavage sites along the sequence as scored by 5 models,
+    Also returns the possible cleavage site and a probability of 
+    cleavage sites along the sequence as scored by 5 models, 
     possible cleavage site (sites with max probs).
     """
     max_scan = validate_scan(seq, max_scan)
@@ -171,14 +171,14 @@ def c_score(seq, max_scan=45):
     # Take the probability of class 1 only.
     all_probs = all_probs_[:, :, 1]
 
-    c_scores = all_probs.max(axis=1)
+    c_score = all_probs.max(axis=1)
 
     # Positions of cleavage site from each model.
     possible_cleavage_sites = all_probs.argmax(axis=1) + 15
     # These positions are counted on 0 based index.
     # Make sure to add one for the 'usual' position.
 
-    return c_scores, all_probs, possible_cleavage_sites
+    return c_score, all_probs, possible_cleavage_sites
 
 def check_fungi(seq):
     '''
@@ -187,7 +187,7 @@ def check_fungi(seq):
     '''
     seq = validate(seq)[:22]
     feat = np.array([seq.count(i) for i in 'RKNDQEHPYWSTGAMCFLVI'])
-
+    
     classifiers = FUNGI.Classifier
     scores = np.array([clf.predict_proba([feat]) for clf in classifiers])[:, :, 1].flatten()
     return scores

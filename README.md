@@ -58,6 +58,8 @@ Razor detects signal peptide in the given sequence. If signal peptide is found, 
 | Prediction from 5 models              | True/False     | True/False          | True/False          |
 | Final scores (Median of scores above) | SP_score       | Toxin_scores_Median | Fungi_scores_Median |
 
+The result of interest is often the final scores (SP_score, Toxin_scores_Median, Fungi_scores_Median). 
+
 #### Cleavage site identification
 Possible cleavage site is the residues where the C-score is maximum. There will be 5 probable cleavage sites form 5 models. The location of the median of these max C-scores is regarded as the final cleavage site. If all of the signal peptide predictions are False, the final cleavage site will be 0 regardless of the values in possible cleavage sites.
 
